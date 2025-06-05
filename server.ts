@@ -16,6 +16,11 @@ app.get("/api/game/:id", async (req, res) => {
     res.json(game) // return is optional on last line
 })
 
+app.get("/api/games", async (_, res) => {
+    const games = await api.getGames()
+    res.json(games)
+})
+
 app.post("/api/game", async (req, res) => {
     const game = await api.createGame()
     res.json(game)
