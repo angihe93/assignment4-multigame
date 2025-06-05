@@ -4,7 +4,7 @@ export interface Connect4Api {
     createGame(): Promise<GameState>
     makeMove(gameId: string, chosenCol: ChosenCol): Promise<GameState>
     getGame(gameId: string): Promise<GameState>
-    getGames(): Promise<GameState[]>
+    getGames(): Promise<{ open: GameState[], closed: GameState[] }>
 }
 
 // server implementation, using an in-memory data structure to store and manage games
@@ -24,8 +24,12 @@ export class Connect4InMemoryApi implements Connect4Api {
         return game
     }
 
-    async getGames(): Promise<GameState[]> {
-        return Array.from(this.games.values())
+    async getGames(): Promise<{ open: GameState[], closed: GameState[] }> {
+        const gamesArray = Array.from(this.games.values())
+        const open = gamesArray.filter((game: GameState) => !game.endState)
+        const closed = gamesArray.filter((game: GameState) => game.endState != null)
+        // return Array.from(this.games.values())
+        return { open, closed }
     }
 
     async makeMove(gameId: string, chosenCol: ChosenCol) {
@@ -57,7 +61,7 @@ export class Connect4ClientApi implements Connect4Api {
         return game
     }
 
-    async getGames(): Promise<GameState[]> {
+    async getGames(): Promise<{ open: GameState[], closed: GameState[] }> {
         // const response = await fetch(`${BASE_URL}/api/games`)
         const response = await fetch(`/api/games`)
         const games = await response.json()
