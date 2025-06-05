@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tailwindcss/vite": "^4.1.8",
     "dotenv": "^16.5.0",
     "drizzle-orm": "^0.44.2",
     "express": "^5.1.0",
@@ -17,6 +18,8 @@
     "react": "^19.1.0",
     "react-confetti": "^6.4.0",
     "react-dom": "^19.1.0",
+    "react-router": "^7.6.2",
+    "tailwindcss": "^4.1.8",
     "vite-express": "^0.21.1"
   },
   "devDependencies": {

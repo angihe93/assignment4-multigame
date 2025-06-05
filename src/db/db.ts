@@ -36,6 +36,16 @@ export class Connect4DbApi implements Connect4Api {
         }
     }
 
+    async getGames() {
+        const results = await db.select().from(gamesTable)
+        return results.map(game => ({
+            id: game.id,
+            currentPlayer: game.currentPlayer as Player,
+            grid: game.grid as Grid,
+            endState: game.result as EndState
+        }))
+    }
+
     async makeMove(gameId: string, chosenCol: ChosenCol) {
         const game = await this.getGame(gameId)
         const newGame = makeMove(game, chosenCol)
