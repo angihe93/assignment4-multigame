@@ -4,6 +4,8 @@ import { type ChosenCol, type Game as GameState } from './game/game'
 import Confetti from 'react-confetti'
 import { Connect4ClientApi } from './api'
 import { useLoaderData, useNavigate } from 'react-router'
+import { io } from "socket.io-client"
+import { GAME_UPDATED, USER_JOINED } from "../constants"
 
 export default function GameView() {
     // client api will call the routes which will call the server api
@@ -70,6 +72,21 @@ export default function GameView() {
         setGameState(newGameState)
         navigate(`/game/${id}`)
     }
+
+    useEffect(() => {
+        const socket = io("http://localhost:3000") // creates new socket io client
+        socket.on("connect", () => { // runs when socket is connected
+            console.log("connected to socket")
+            socket.emit("join-game", gameState?.id)
+            socket.on(USER_JOINED, (userId: string) => console.log(`user ${userId} joined`)) // userId is the socket.id emitted from server
+            socket.on(GAME_UPDATED, (game: GameState) => {
+                console.log("game updated", game)
+                setGameState(game)
+            })
+        })
+        return () => { socket.disconnect() }
+    }, [gameState?.id])
+
 
     if (!gameState) {
         return (

@@ -11,6 +11,9 @@ export default function GameLobby() {
 
     const [games, setGames] = useState<GameState[]>(initialGames)
 
+    // TODO: display currently open games (ie. no result), newest ones on top
+    // also show some completed games, limit 10
+
     return (
         <div>
             {/* fix tailwind and plain css styles conflicting and making GameView table weird */}
