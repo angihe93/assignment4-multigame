@@ -6,13 +6,13 @@ import { useState } from "react"
 import './gameLobby.css'
 
 export default function GameLobby() {
-    //
-    const { games: initialGames } = useLoaderData<{ games: GameState[] }>()
 
-    const [games, setGames] = useState<GameState[]>(initialGames)
+    const { games: initialGames } = useLoaderData<{ games: { open: GameState[], closed: GameState[] } }>()
 
-    // TODO: display currently open games (ie. no result), newest ones on top
-    // also show some completed games, limit 10
+    // const [games, setGames] = useState<GameState[]>(initialGames)
+    // display currently open games (ie. no result yet), and <= 10 completed games
+    const [openGames, setOpenGames] = useState<GameState[]>(initialGames.open)
+    const [closedGames, setClosedGames] = useState<GameState[]>(initialGames.closed)
 
     return (
         <div>
@@ -33,8 +33,17 @@ export default function GameLobby() {
                 </div>
 
                 {/* <div className='bg-white opacity-70'> */}
+                <div style={{ backgroundColor: 'white', opacity: 0.7, height: '300px', overflowY: 'auto' }}>
+                    {openGames.map(game => (
+                        <div key={game.id}>
+                            <Link to={`/game/${game.id}`}>{game.id}</Link>
+                        </div>
+                    ))}
+                </div>
+
+                <div style={{ marginTop: '1rem', marginBottom: '1rem' }}>Recent games</div>
                 <div style={{ backgroundColor: 'white', opacity: 0.7 }}>
-                    {games.map(game => (
+                    {closedGames.map(game => (
                         <div key={game.id}>
                             <Link to={`/game/${game.id}`}>{game.id}</Link>
                         </div>

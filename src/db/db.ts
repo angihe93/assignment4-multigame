@@ -3,7 +3,7 @@ import type { Connect4Api } from '../api'
 import { type Grid, type EndState, type Game as GameState, type Player, initialGameState as createGame, move as makeMove, type ChosenCol } from '../game/game'
 // import { type Game as GameState, initialGameState as createGame, move as makeMove, type ChosenCol } from './game/game.js';
 import { gamesTable } from './schema'
-import { eq } from 'drizzle-orm'
+import { eq, isNotNull, isNull } from 'drizzle-orm'
 
 const url = process.env.DATABASE_URL
 if (!url)
@@ -37,13 +37,22 @@ export class Connect4DbApi implements Connect4Api {
     }
 
     async getGames() {
-        const results = await db.select().from(gamesTable)
-        return results.map(game => ({
-            id: game.id,
-            currentPlayer: game.currentPlayer as Player,
-            grid: game.grid as Grid,
-            endState: game.result as EndState
-        }))
+        const open = await db.select().from(gamesTable).where(isNull(gamesTable.result))
+        const closed = await db.select().from(gamesTable).where(isNotNull(gamesTable.result)).limit(10)
+
+        const mapFn: (game: any) => GameState = (game: any): GameState => {
+            return {
+                id: game.id,
+                currentPlayer: game.currentPlayer as Player,
+                grid: game.grid as Grid,
+                endState: game.result as EndState
+            }
+        }
+
+        return {
+            open: open.map(mapFn),
+            closed: closed.map(mapFn)
+        }
     }
 
     async makeMove(gameId: string, chosenCol: ChosenCol) {
