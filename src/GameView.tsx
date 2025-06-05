@@ -10,6 +10,7 @@ export default function GameView() {
     const api = useMemo(() => new Connect4ClientApi, [])
 
     const { game: initialGame } = useLoaderData<{ game: GameState }>()
+    console.log("we just loaded data:", initialGame)
     const navigate = useNavigate()
 
     const [gameState, setGameState] = useState<GameState | undefined>(initialGame)
@@ -17,6 +18,8 @@ export default function GameView() {
     async function initializeGame() {
         const initialGameState = await api.createGame()
         setGameState(initialGameState)
+        const id = initialGameState.id
+        navigate(`/game/${id}`)
     }
     useEffect(() => {
         if (!gameState)
@@ -58,6 +61,16 @@ export default function GameView() {
 
     console.log(gameState)
 
+    const handleReset = async (): Promise<void> => {
+        // after user hits reset, create new game, and direct to the new game url
+        // so when user refreshes page it is the new game that shows not the previous one
+        setConfettiOn(false)
+        const newGameState = await api.createGame()
+        const id = newGameState.id
+        setGameState(newGameState)
+        navigate(`/game/${id}`)
+    }
+
     if (!gameState) {
         return (
             <div>loading...</div>
@@ -66,9 +79,6 @@ export default function GameView() {
 
     return (
         <>
-            {/* style={{ all: 'unset' }} */}
-
-
             <div>
 
                 <h1>Connect 4</h1>
@@ -110,9 +120,9 @@ export default function GameView() {
                     </tbody>
                 </table>
 
-                {/* TODO: after hitting reset, and user refresh the page the old game still shows bc url hasn't changed
-                try update the loader url  */}
-                <button onClick={() => { initializeGame(); setConfettiOn(false) }} style={{ margin: '1rem' }}>Reset</button>
+                {/* <button onClick={() => { initializeGame(); setConfettiOn(false) }} style={{ margin: '1rem' }}>Reset</button> */}
+                {/* <button onClick={() => { setConfettiOn(false); setGameState(undefined); navigate('/game/new') }} style={{ margin: '1rem' }}>Reset</button> */}
+                <button onClick={handleReset} style={{ margin: '1rem' }}>Reset</button>
                 <button onClick={() => navigate('/')} >back to lobby</button>
             </div >
         </>
