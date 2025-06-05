@@ -74,11 +74,11 @@ export default function GameView() {
     }
 
     useEffect(() => {
-        const socket = io("http://localhost:3000")
-        socket.on("connect", () => {
+        const socket = io("http://localhost:3000") // creates new socket io client
+        socket.on("connect", () => { // runs when socket is connected
             console.log("connected to socket")
             socket.emit("join-game", gameState?.id)
-            socket.on(USER_JOINED, (userId: string) => console.log(`user ${userId} joined`))
+            socket.on(USER_JOINED, (userId: string) => console.log(`user ${userId} joined`)) // userId is the socket.id emitted from server
             socket.on(GAME_UPDATED, (game: GameState) => {
                 console.log("game updated", game)
                 setGameState(game)
