@@ -36,10 +36,12 @@ export class Connect4InMemoryApi implements Connect4Api {
     }
 }
 
+const BASE_URL = "http://localhost:3000"
+
 // client implementation, using fetch to communicate with the sever
 export class Connect4ClientApi implements Connect4Api {
     async createGame(): Promise<GameState> {
-        const response = await fetch("/api/game", {
+        const response = await fetch(`${BASE_URL}/api/game`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
         })
@@ -48,19 +50,19 @@ export class Connect4ClientApi implements Connect4Api {
     }
 
     async getGame(gameId: string): Promise<GameState> {
-        const response = await fetch(`/api/game/${gameId}`)
+        const response = await fetch(`${BASE_URL}/api/game/${gameId}`)
         const game = await response.json()
         return game
     }
 
     async getGames(): Promise<GameState[]> {
-        const response = await fetch(`/api/games`)
+        const response = await fetch(`${BASE_URL}/api/games`)
         const games = await response.json()
         return games
     }
 
     async makeMove(gameId: string, chosenCol: ChosenCol) {
-        const response = await fetch(`/api/game/${gameId}/move`, {
+        const response = await fetch(`${BASE_URL}/api/game/${gameId}/move`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ chosenCol })
