@@ -35,15 +35,16 @@ app.post("/api/game", async (req, res) => {
 
 app.post("/api/game/:id/move", async (req, res) => {
     const game = await api.makeMove(req.params.id, req.body.chosenCol)
+    io.to(makeRoomId(game.id)).emit(GAME_UPDATED, game)
     res.json(game)
 })
 
-// ViteExpress.listen(app, 3000, () => console.log("Server is listening..."));
+const server = ViteExpress.listen(app, 3000, () => console.log("Server is listening..."));
 
 const PORT = parseInt(process.env.PORT || "3000")
 
-const server = app.listen(PORT,
-    () => console.log(`Server is listening at http://localhost:${PORT}`))
+// const server = app.listen(PORT,
+//     () => console.log(`Server is listening at http://localhost:${PORT}`))
 
 const io = new Server(server, {
     cors: {
@@ -52,19 +53,21 @@ const io = new Server(server, {
     }
 })
 
-// io.on("connection", (socket) => {
-//     console.log(`a user connected on socket id: ${socket.id}`)
-//     socket.on("join-game"), async (gameId: string) => {
-//         const game = await api.getGame(gameId)
-//         if (!game) {
-//             console.error(`Game ${gameId} not found`)
-//             return
-//         }
-//         // https://socket.io/docs/v3/rooms/
-//         // A room is an arbitrary channel that sockets can join and leave. It can be used to broadcast events to a subset of clients
-//         const roomId = makeRoomId(game)
-//         socket.join(roomId)
-//         console.log(`Socket ${socket.id} joined room ${roomId}`)
-//         io.to(roomId).emit(USER_JOINED, socket.id)
-//     }
-// })
+const makeRoomId = (gameId: string) => `game-${gameId}`
+
+io.on("connection", (socket) => {
+    console.log(`a user connected on socket id: ${socket.id}`)
+    socket.on("join-game", async (gameId: string) => {
+        const game = await api.getGame(gameId)
+        if (!game) {
+            console.error(`Game ${gameId} not found`)
+            return
+        }
+        // https://socket.io/docs/v3/rooms/
+        // A room is an arbitrary channel that sockets can join and leave. It can be used to broadcast events to a subset of clients
+        const roomId = makeRoomId(gameId)
+        socket.join(roomId)
+        console.log(`Socket ${socket.id} joined room ${roomId}`)
+        io.to(roomId).emit(USER_JOINED, socket.id)
+    })
+})
