@@ -9,5 +9,5 @@ RUN bun install
 EXPOSE 3000
 
 # RUN NODE_ENV=production bun run server.ts 
-ENV NODE_ENV=production
+# ENV NODE_ENV=production
 CMD ["bun", "run", "server.ts"]
