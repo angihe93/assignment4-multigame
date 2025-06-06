@@ -4,6 +4,12 @@ bun install
 bun run dev
 ```
 
+Steps to build docker image and run container:
+```
+docker build -t angi93/connect4 .
+docker run -p 3000:3000 angi93/connect4
+```
+
 ========
 # React + TypeScript + Vite
 
