@@ -12,10 +12,14 @@ docker build -t angi93/connect4 .
 docker run -p 3000:3000 angi93/connect4
 ```
 
+<br>
+Steps to deploy on Sevalla:<br>
+Go to applications, create new application, select git repo<br>
+Choose lowest resources, and create<br>
+In deployments, click deploy application, click on deployment link<br>
+Click on update, change build settings, and click Dockerfile
 
-
-Deploy on Sevalla:
-
+<br>
 
 ========
 # React + TypeScript + Vite
