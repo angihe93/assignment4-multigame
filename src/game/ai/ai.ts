@@ -5,11 +5,23 @@ let endGridArray: Grid[] = []
 let endWinGridArray: Grid[] = []
 let endLossGridArray: Grid[] = []
 
+const endGridSet: Set<string> = new Set()
+const endWinGridSet: Set<string> = new Set()
+const endNonWinGridSet: Set<string> = new Set()
+
+// track seen grids to avoid duplicate work
+const seenGridSet: Set<string> = new Set()
+
 function genEndGrid(endNumFilled: number, currentNumFilled: number, currentGrid: Grid, currentPlayer: Player): Grid | undefined {
-    console.log(`genEndGrid: ${endNumFilled}, ${currentNumFilled}, ${currentGrid}, ${currentPlayer}`)
+    // console.log(`genEndGrid: ${endNumFilled}, ${currentNumFilled}, ${currentGrid}, ${currentPlayer}`)
+    if (seenGridSet.has(JSON.stringify(currentGrid)))
+        return undefined
+    else
+        seenGridSet.add(JSON.stringify(currentGrid))
 
     if (currentNumFilled === endNumFilled) {
-        endGridArray.push(currentGrid)
+        // endGridArray.push(currentGrid)
+        endGridSet.add(JSON.stringify(currentGrid))
         console.log(`"return currentGrid: ${currentGrid}`)
         const endState = calculateEndState({
             id: "",
@@ -19,10 +31,15 @@ function genEndGrid(endNumFilled: number, currentNumFilled: number, currentGrid:
 
         const correctedPlayer = currentPlayer === "red" ? "yellow" : "red"
         console.log(`endState ${endState}, correctedPlayer ${correctedPlayer}`)
-        if (endState === correctedPlayer)
-            endWinGridArray.push(currentGrid)
-        else if (endState !== correctedPlayer && endState !== 'draw')
-            endLossGridArray.push(currentGrid)
+        if (endState === correctedPlayer) {
+            // endWinGridArray.push(currentGrid)
+            endWinGridSet.add(JSON.stringify(currentGrid))
+        }
+
+        else if (endState !== correctedPlayer && endState !== 'draw') {
+            // endLossGridArray.push(currentGrid)
+            endNonWinGridSet.add(JSON.stringify(currentGrid))
+        }
         return currentGrid
     }
 
@@ -47,7 +64,28 @@ function genEndGrid(endNumFilled: number, currentNumFilled: number, currentGrid:
     return undefined;
 }
 
-genEndGrid(8, 0, Array.from({ length: 6 }, () => Array(7).fill(null)), 'red')
+// genEndGrid(7, 0, Array.from({ length: 6 }, () => Array(7).fill(null)), 'red')
+genEndGrid(9, 0, Array.from({ length: 6 }, () => Array(7).fill(null)), 'red')
 console.log(endGridArray.length)
 console.log(endWinGridArray.length)
 console.log(endLossGridArray.length)
+console.log(endGridSet.size)
+console.log(endWinGridSet.size)
+console.log(endNonWinGridSet.size)
+// printed counts for 7 filled cells:
+// 823536
+// 13032
+// 810504
+// 54859
+// 728
+// 54131
+
+// set counts for 8 filled cells
+// 186389
+// 1945
+// 184444
+
+// set counts for 9
+// 567441
+// 23413
+// 544028
