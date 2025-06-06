@@ -23,7 +23,7 @@ export const initialGameState = (): Game => {
     }
 }
 
-function calculateEndState(game: Game) {
+export function calculateEndState(game: Game) {
     // count if currentPlayer has 4 cells in a row
     for (let row = 0; row < 6; row++) {
         for (let col = 0; col < 7; col++) {
