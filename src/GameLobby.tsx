@@ -11,8 +11,8 @@ export default function GameLobby() {
 
     // const [games, setGames] = useState<GameState[]>(initialGames)
     // display currently open games (ie. no result yet), and <= 10 completed games
-    const [openGames, setOpenGames] = useState<GameState[]>(initialGames.open)
-    const [closedGames, setClosedGames] = useState<GameState[]>(initialGames.closed)
+    const [openGames] = useState<GameState[]>(initialGames.open)
+    const [closedGames] = useState<GameState[]>(initialGames.closed)
 
     return (
         <div>

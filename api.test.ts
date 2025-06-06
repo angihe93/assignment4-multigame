@@ -46,7 +46,7 @@ describe('Connect4InMemoryApi', () => {
         })
 
         it('should reject moves on non-existent games', async () => {
-            await expect(api.makeMove('non-existent-id', 0, 0))
+            await expect(api.makeMove('non-existent-id', 0))
                 .rejects.toThrow('game not found')
         })
 

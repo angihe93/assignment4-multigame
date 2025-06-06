@@ -40,7 +40,7 @@ export class Connect4InMemoryApi implements Connect4Api {
     }
 }
 
-const BASE_URL = "http://localhost:3000"
+// const BASE_URL = "http://localhost:3000"
 
 // client implementation, using fetch to communicate with the sever
 export class Connect4ClientApi implements Connect4Api {

@@ -1,8 +1,25 @@
+Game app is running at https://assignment4-multigame-oid6u.kinsta.app
+
 To run app:
 ```
 bun install
 bun run dev
 ```
+
+Steps to build docker image and run container:
+```
+docker build -t angi93/connect4 .
+docker run -p 3000:3000 angi93/connect4
+```
+
+<br>
+Steps to deploy on Sevalla:<br>
+Go to applications, create new application, select git repo<br>
+Choose lowest resources, and create<br>
+In deployments, click deploy application, click on deployment link<br>
+Click on update, change build settings, and click Dockerfile
+
+<br>
 
 ========
 # React + TypeScript + Vite

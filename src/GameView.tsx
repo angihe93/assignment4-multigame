@@ -76,7 +76,8 @@ export default function GameView() {
     useEffect(() => {
         // need to check for gameState else socket will connect and setGameState to null, which causes a bug for lobby's create new game when navigating to game/id(null)
         if (gameState) {
-            const socket = io("http://localhost:3000") // creates new socket io client
+            // const socket = io("http://localhost:3000") // creates new socket io client
+            const socket = io() // If frontend and backend are on the same domain
             socket.on("connect", () => { // runs when socket is connected
                 console.log("connected to socket")
                 socket.emit("join-game", gameState?.id)
