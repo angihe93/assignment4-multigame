@@ -10,7 +10,7 @@ import cors from "cors" // needed for frontend to backend requests with express
 const app = express();
 app.use(express.json());
 app.use(cors({
-    origin: ["http://localhost:5173", "https://assignment4-multigame-oid6u.kinsta.app"],
+    origin: ["http://localhost:5173", "https://assignment4-multigame-oid6u.kinsta.app", "*"],
     methods: ["GET", "POST"]
 }))
 // const api = new Connect4InMemoryApi();
@@ -48,7 +48,7 @@ const PORT = parseInt(process.env.PORT || "3000")
 
 const io = new Server(server, {
     cors: {
-        origin: ["http://localhost:5173", "https://assignment4-multigame-oid6u.kinsta.app"],
+        origin: ["http://localhost:5173", "https://assignment4-multigame-oid6u.kinsta.app", "*"],
         methods: ["GET", "POST"]
     }
 })
