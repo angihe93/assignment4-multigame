@@ -1,0 +1,1 @@
+ALTER TABLE "connect4_optimal_moves" ALTER COLUMN "grid" SET DATA TYPE text;
