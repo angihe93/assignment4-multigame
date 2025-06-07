@@ -8,6 +8,20 @@
       "when": 1749071353650,
       "tag": "0000_unusual_liz_osborn",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1749333293379,
+      "tag": "0001_special_thena",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1749334029221,
+      "tag": "0002_complete_cerise",
+      "breakpoints": true
     }
   ]
 }
