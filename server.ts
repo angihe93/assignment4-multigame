@@ -29,7 +29,8 @@ app.get("/api/games", async (_, res) => {
 })
 
 app.post("/api/game", async (req, res) => {
-    const game = await api.createGame()
+    const { aiPlayer } = req.body;
+    const game = await api.createGame(aiPlayer)
     res.json(game)
 })
 
@@ -38,6 +39,13 @@ app.post("/api/game/:id/move", async (req, res) => {
     io.to(makeRoomId(game.id)).emit(GAME_UPDATED, game)
     res.json(game)
 })
+
+app.post("/api/game/:id/ai-move", async (req, res) => {
+    const game = await api.makeAiMove(req.params.id, req.body.gridStr)
+    io.to(makeRoomId(req.params.id)).emit(GAME_UPDATED, game)
+    res.json(game)
+})
+
 
 const server = ViteExpress.listen(app, 3000, () => console.log("Server is listening..."));
 

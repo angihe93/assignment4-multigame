@@ -31,15 +31,15 @@ const router = createBrowserRouter([
             throw new Error("Game ID is required")
           }
           const game = await api.getGame(params.gameId)
-          return { game }
+          return { game, aiPlayer: game.aiPlayer }
         }
       },
       {
-        path: "/game/new",
+        path: "/game/new/:aiPlayer?", // optional aiPlayer param
         Component: GameView,
-        loader: async () => {
+        loader: async ({ params }) => {
           const game = null
-          return { game }
+          return { game, aiPlayer: params.aiPlayer }
         }
       }
     ]

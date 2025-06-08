@@ -1,0 +1,1 @@
+ALTER TABLE "connect4_games" ADD COLUMN "aiPlayer" varchar(255);

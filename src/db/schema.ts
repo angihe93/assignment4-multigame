@@ -4,6 +4,7 @@ import type { Grid } from "../game/game"
 export const gamesTable = pgTable("connect4_games", {
     id: varchar({ length: 255 }).primaryKey(),
     currentPlayer: varchar({ length: 255 }).notNull(),
+    aiPlayer: varchar({ length: 255 }),
     grid: jsonb().$type<Grid>().notNull(),
     result: varchar({ length: 255 }),
 })
@@ -11,4 +12,5 @@ export const gamesTable = pgTable("connect4_games", {
 export const optimalMovesTable = pgTable("connect4_optimal_moves", {
     grid: text().primaryKey(),
     move: smallint()
+    // TODO: add endNumFilled as part of pkey, for now assume game plays until 7 cells filled
 })

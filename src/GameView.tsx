@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import './App.css'
-import { type ChosenCol, type Game as GameState } from './game/game'
+import { type ChosenCol, type Game as GameState, type Player } from './game/game'
 import Confetti from 'react-confetti'
 import { Connect4ClientApi } from './api'
 import { useLoaderData, useNavigate } from 'react-router'
@@ -11,15 +11,19 @@ export default function GameView() {
     // client api will call the routes which will call the server api
     const api = useMemo(() => new Connect4ClientApi, [])
 
-    const { game: initialGame } = useLoaderData<{ game: GameState }>()
-    console.log("we just loaded data:", initialGame)
+    const { game: initialGame, aiPlayer: aiPlayer } = useLoaderData<{ game: GameState, aiPlayer: Player }>()
+    // const aiPlayer = useLoaderData<aiPlayer: Player>()
+    // console.log("we just loaded data:", initialGame, aiPlayer)
     const navigate = useNavigate()
 
     const [gameState, setGameState] = useState<GameState | undefined>(initialGame)
+    // const [aiPlayerState, setAiPlayerState] = useState<Player | undefined>()
 
     async function initializeGame() {
-        const initialGameState = await api.createGame()
+        // show modal, ask if user wants to play with ai or not, and if ai if they want to play first or second
+        const initialGameState = await api.createGame(aiPlayer)
         setGameState(initialGameState)
+        // setAiPlayerState(aiPlayer)
         const id = initialGameState.id
         navigate(`/game/${id}`)
     }
@@ -32,12 +36,16 @@ export default function GameView() {
     const [flashOn, setFlashOn] = useState(false);
 
     const colClick = async (col: ChosenCol) => {
-        console.log(col)
-        if (!gameState || gameState.endState) return; // game is not ready or is over, do nothing
-        const audio = new Audio('/mixkit-video-game-retro-click-237.wav');
-        audio.play();
-        const updatedGameState = await api.makeMove(gameState.id, col)
-        setGameState(updatedGameState)
+        if (!gameState) return;
+        if (gameState.endState) return; // game is over, do nothing
+        if (gameState.currentPlayer !== aiPlayer) {
+            console.log(col)
+            if (!gameState || gameState.endState) return; // game is not ready or is over, do nothing
+            const audio = new Audio('/mixkit-video-game-retro-click-237.wav');
+            audio.play();
+            const updatedGameState = await api.makeMove(gameState.id, col)
+            setGameState(updatedGameState)
+        }
     }
 
     const capitalizeString = (str: string): string => {
@@ -67,7 +75,7 @@ export default function GameView() {
         // after user hits reset, create new game, and direct to the new game url
         // so when user refreshes page it is the new game that shows not the previous one
         setConfettiOn(false)
-        const newGameState = await api.createGame()
+        const newGameState = await api.createGame(aiPlayer)
         const id = newGameState.id
         setGameState(newGameState)
         navigate(`/game/${id}`)
@@ -89,6 +97,20 @@ export default function GameView() {
             return () => { socket.disconnect() }
         }
     }, [gameState?.id])
+
+    useEffect(() => {
+        const aiMove = async () => {
+            if (!gameState) return
+            if (gameState.endState) return; // game is over, do nothing
+            if (gameState.currentPlayer === aiPlayer) {
+                const audio = new Audio('/mixkit-video-game-retro-click-237.wav');
+                audio.play();
+                const updatedGameState = await api.makeAiMove(gameState.id, JSON.stringify(gameState.grid))
+                setGameState(updatedGameState)
+            }
+        }
+        aiMove()
+    }, [gameState?.currentPlayer])
 
 
     if (!gameState) {
