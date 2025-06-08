@@ -24,7 +24,7 @@ export const initialGameState = (): Game => {
     }
 }
 
-export function calculateEndState(game: Game) {
+export function calculateEndState(game: Game, aiMode?: boolean) {
     // count if currentPlayer has 4 cells in a row
     for (let row = 0; row < 6; row++) {
         for (let col = 0; col < 7; col++) {
@@ -53,14 +53,23 @@ export function calculateEndState(game: Game) {
     if (game.grid.every(row => row.every(cell => cell !== null))) {
         return 'draw';
     }
+    if (aiMode) {
+        // if 7 cells are filled in and no winner yet, return draw, since Ai mode only supported for up to 7 moves for now
+        const numFilledCells = game.grid.reduce(
+            (sum, row) => sum + row.filter(cell => cell !== null).length,
+            0)
+        if (numFilledCells >= 7) return 'draw'
+    }
+
     return undefined;
 }
 
-export function move(game: Game, chosenCol: ChosenCol): Game {
+export function move(game: Game, chosenCol: ChosenCol, aiMode?: boolean): Game {
     if (game.grid[0][chosenCol] != null) {
         return game; // column is full
     }
     if (game.endState) return game // game has ended
+
     const nextGame = structuredClone(game);
     // find highest row occupied in chosenCol
     let row = 5;
@@ -70,7 +79,11 @@ export function move(game: Game, chosenCol: ChosenCol): Game {
         }
     }
     nextGame.grid[row][chosenCol] = game.currentPlayer;
-    nextGame.endState = calculateEndState(nextGame);
+
+    if (aiMode) nextGame.endState = calculateEndState(nextGame, true)
+    else nextGame.endState = calculateEndState(nextGame);
+
     nextGame.currentPlayer = nextGame.currentPlayer === 'red' ? 'yellow' : 'red';
+
     return nextGame;
 }

@@ -5,7 +5,7 @@ export interface Connect4Api {
     makeMove(gameId: string, chosenCol: ChosenCol): Promise<GameState>
     getGame(gameId: string): Promise<GameState>
     getGames(): Promise<{ open: GameState[], closed: GameState[] }>
-    getOptimalMove?(gridStr: string): Promise<ChosenCol | null>
+    makeAiMove?(gameId: string, gridStr: string): Promise<GameState>
 }
 
 // server implementation, using an in-memory data structure to store and manage games
@@ -76,6 +76,16 @@ export class Connect4ClientApi implements Connect4Api {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ chosenCol })
+        })
+        const game = await response.json()
+        return game
+    }
+
+    async makeAiMove(gameId: string, gridStr: string) {
+        const response = await fetch(`/api/game/${gameId}/ai-move`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ gridStr })
         })
         const game = await response.json()
         return game

@@ -12,4 +12,5 @@ export const gamesTable = pgTable("connect4_games", {
 export const optimalMovesTable = pgTable("connect4_optimal_moves", {
     grid: text().primaryKey(),
     move: smallint()
+    // TODO: add endNumFilled as part of pkey, for now assume game plays until 7 cells filled
 })

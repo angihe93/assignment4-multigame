@@ -40,6 +40,13 @@ app.post("/api/game/:id/move", async (req, res) => {
     res.json(game)
 })
 
+app.post("/api/game/:id/ai-move", async (req, res) => {
+    const game = await api.makeAiMove(req.params.id, req.body.gridStr)
+    io.to(makeRoomId(req.params.id)).emit(GAME_UPDATED, game)
+    res.json(game)
+})
+
+
 const server = ViteExpress.listen(app, 3000, () => console.log("Server is listening..."));
 
 const PORT = parseInt(process.env.PORT || "3000")

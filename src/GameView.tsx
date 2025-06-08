@@ -13,7 +13,7 @@ export default function GameView() {
 
     const { game: initialGame, aiPlayer: aiPlayer } = useLoaderData<{ game: GameState, aiPlayer: Player }>()
     // const aiPlayer = useLoaderData<aiPlayer: Player>()
-    console.log("we just loaded data:", initialGame, aiPlayer)
+    // console.log("we just loaded data:", initialGame, aiPlayer)
     const navigate = useNavigate()
 
     const [gameState, setGameState] = useState<GameState | undefined>(initialGame)
@@ -36,12 +36,16 @@ export default function GameView() {
     const [flashOn, setFlashOn] = useState(false);
 
     const colClick = async (col: ChosenCol) => {
-        console.log(col)
-        if (!gameState || gameState.endState) return; // game is not ready or is over, do nothing
-        const audio = new Audio('/mixkit-video-game-retro-click-237.wav');
-        audio.play();
-        const updatedGameState = await api.makeMove(gameState.id, col)
-        setGameState(updatedGameState)
+        if (!gameState) return;
+        if (gameState.endState) return; // game is over, do nothing
+        if (gameState.currentPlayer !== aiPlayer) {
+            console.log(col)
+            if (!gameState || gameState.endState) return; // game is not ready or is over, do nothing
+            const audio = new Audio('/mixkit-video-game-retro-click-237.wav');
+            audio.play();
+            const updatedGameState = await api.makeMove(gameState.id, col)
+            setGameState(updatedGameState)
+        }
     }
 
     const capitalizeString = (str: string): string => {
@@ -93,6 +97,20 @@ export default function GameView() {
             return () => { socket.disconnect() }
         }
     }, [gameState?.id])
+
+    useEffect(() => {
+        const aiMove = async () => {
+            if (!gameState) return
+            if (gameState.endState) return; // game is over, do nothing
+            if (gameState.currentPlayer === aiPlayer) {
+                const audio = new Audio('/mixkit-video-game-retro-click-237.wav');
+                audio.play();
+                const updatedGameState = await api.makeAiMove(gameState.id, JSON.stringify(gameState.grid))
+                setGameState(updatedGameState)
+            }
+        }
+        aiMove()
+    }, [gameState?.currentPlayer])
 
 
     if (!gameState) {

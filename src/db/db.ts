@@ -1,6 +1,6 @@
 import { drizzle } from 'drizzle-orm/postgres-js'
 import type { Connect4Api } from '../api'
-import { type Grid, type EndState, type Game as GameState, type Player, initialGameState as createGame, move as makeMove, type ChosenCol } from '../game/game'
+import { type Grid, type EndState, type Game as GameState, type Player, initialGameState as createGame, move as makeMove, type ChosenCol, type Game } from '../game/game'
 // import { type Game as GameState, initialGameState as createGame, move as makeMove, type ChosenCol } from './game/game.js';
 import { gamesTable, optimalMovesTable } from './schema'
 import { eq, isNotNull, isNull } from 'drizzle-orm'
@@ -75,8 +75,48 @@ export class Connect4DbApi implements Connect4Api {
         return newGame
     }
 
-    async getOptimalMove(gridStr: string): Promise<ChosenCol | null> {
+    async makeAiMove(gameId: string, gridStr: string): Promise<Game> {
         const results = await db.select().from(optimalMovesTable).where(eq(optimalMovesTable.grid, gridStr))
-        return results.length > 0 ? results[0]['move'] as ChosenCol : null
+        console.log("optimalMovesTable results", results)
+        let moveCol = results.length > 0 ? results[0]['move'] as ChosenCol : null
+        if (moveCol === null) { // return a random available col
+            // use Fisher-Yates shuffle the col numbers then find one that is available
+            const shuffle = (array: number[]): number[] => {
+                let currentIndex = array.length
+                let randomIndex: number
+                const shuffledArray = [...array]
+                while (currentIndex !== 0) {
+                    randomIndex = Math.floor(Math.random() * currentIndex)
+                    currentIndex--
+                    const temp = shuffledArray[currentIndex]
+                    shuffledArray[currentIndex] = shuffledArray[randomIndex]
+                    shuffledArray[randomIndex] = temp
+                }
+                return shuffledArray
+            }
+
+            const cols = shuffle([0, 1, 2, 3, 4, 5, 6])
+            const grid = JSON.parse(gridStr)
+            for (const col of cols) {
+                if (grid[0][col] === null) {
+                    moveCol = col as ChosenCol
+                    break
+                }
+            }
+        }
+
+        const game = await this.getGame(gameId)
+        const newGame = makeMove(game, moveCol!, true)
+
+        await db
+            .update(gamesTable)
+            .set({
+                currentPlayer: newGame.currentPlayer,
+                grid: newGame.grid,
+                result: newGame.endState
+            })
+            .where(eq(gamesTable.id, gameId))
+
+        return newGame
     }
 }
