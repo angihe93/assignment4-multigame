@@ -13,6 +13,7 @@ export default function GameLobby() {
     // display currently open games (ie. no result yet), and <= 10 completed games
     const [openGames, setOpenGames] = useState<GameState[]>(initialGames.open)
     const [closedGames, setClosedGames] = useState<GameState[]>(initialGames.closed)
+    const [aiModeClicked, setAiModeClicked] = useState(false)
 
     return (
         <div>
@@ -31,11 +32,26 @@ export default function GameLobby() {
                         <span style={{ backgroundColor: 'white', borderRadius: '0.5rem', marginLeft: '0.5rem' }}> start a new game </span>
                     </Link>
                     , or
-                    <Link to="/game/new/yellow">
-                        {/* <span className='bg-white rounded-lg ml-1'> start a new game </span> */}
-                        <span style={{ backgroundColor: 'white', borderRadius: '0.5rem', marginLeft: '0.5rem' }}> play with AI (supported for 7 moves) </span>
-                    </Link>
-                    {/* TODO: add button/span that displays when play with ai is clicked that lets user select whether to go first or seond */}
+                    <span onClick={() => setAiModeClicked(true)}
+                        style={{ backgroundColor: 'white', borderRadius: '0.5rem', marginLeft: '0.5rem', paddingLeft: '0.5rem', paddingRight: '0.5rem' }}>
+                        play with AI (supported for 7 moves)
+                    </span>
+                    {aiModeClicked &&
+                        <div>
+                            <Link to="/game/new/yellow">
+                                <span
+                                    style={{ backgroundColor: 'white', borderRadius: '0.5rem', marginLeft: '0.5rem', paddingLeft: '0.5rem', paddingRight: '0.5rem' }}>
+                                    play first
+                                </span>
+                            </Link>
+                            <Link to="/game/new/red">
+                                <span
+                                    style={{ backgroundColor: 'white', borderRadius: '0.5rem', marginLeft: '0.5rem', paddingLeft: '0.5rem', paddingRight: '0.5rem' }}>
+                                    play second
+                                </span>
+                            </Link>
+                        </div>
+                    }
                 </div>
 
                 {/* <div className='bg-white opacity-70'> */}
