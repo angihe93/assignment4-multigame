@@ -29,7 +29,8 @@ app.get("/api/games", async (_, res) => {
 })
 
 app.post("/api/game", async (req, res) => {
-    const game = await api.createGame()
+    const { aiPlayer } = req.body;
+    const game = await api.createGame(aiPlayer)
     res.json(game)
 })
 

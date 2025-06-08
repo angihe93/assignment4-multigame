@@ -2,7 +2,7 @@ import { drizzle } from 'drizzle-orm/postgres-js'
 import type { Connect4Api } from '../api'
 import { type Grid, type EndState, type Game as GameState, type Player, initialGameState as createGame, move as makeMove, type ChosenCol } from '../game/game'
 // import { type Game as GameState, initialGameState as createGame, move as makeMove, type ChosenCol } from './game/game.js';
-import { gamesTable } from './schema'
+import { gamesTable, optimalMovesTable } from './schema'
 import { eq, isNotNull, isNull } from 'drizzle-orm'
 
 const url = process.env.DATABASE_URL
@@ -12,13 +12,18 @@ if (!url)
 const db = drizzle(url)
 
 export class Connect4DbApi implements Connect4Api {
-    async createGame(): Promise<GameState> {
+    async createGame(aiPlayer?: Player): Promise<GameState> {
+        console.log("Connect4DbApi createGame aiPlayer", aiPlayer)
         const game = createGame()
-        await db.insert(gamesTable).values({
+        const values = {
             id: game.id,
             currentPlayer: game.currentPlayer,
             grid: game.grid
-        })
+        }
+        if (aiPlayer)
+            await db.insert(gamesTable).values({ ...values, aiPlayer: aiPlayer })
+        else
+            await db.insert(gamesTable).values(values)
         return game
     }
 
@@ -31,6 +36,7 @@ export class Connect4DbApi implements Connect4Api {
         return {
             id: game.id,
             currentPlayer: game.currentPlayer as Player,
+            aiPlayer: game.aiPlayer as Player,
             grid: game.grid as Grid,
             endState: game.result as EndState
         }
@@ -67,5 +73,10 @@ export class Connect4DbApi implements Connect4Api {
             })
             .where(eq(gamesTable.id, gameId))
         return newGame
+    }
+
+    async getOptimalMove(gridStr: string): Promise<ChosenCol | null> {
+        const results = await db.select().from(optimalMovesTable).where(eq(optimalMovesTable.grid, gridStr))
+        return results.length > 0 ? results[0]['move'] as ChosenCol : null
     }
 }

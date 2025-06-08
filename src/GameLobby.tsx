@@ -30,6 +30,12 @@ export default function GameLobby() {
                         {/* <span className='bg-white rounded-lg ml-1'> start a new game </span> */}
                         <span style={{ backgroundColor: 'white', borderRadius: '0.5rem', marginLeft: '0.5rem' }}> start a new game </span>
                     </Link>
+                    or
+                    <Link to="/game/new/yellow">
+                        {/* <span className='bg-white rounded-lg ml-1'> start a new game </span> */}
+                        <span style={{ backgroundColor: 'white', borderRadius: '0.5rem', marginLeft: '0.5rem' }}>play with AI (supported for 7 moves) </span>
+                    </Link>
+                    {/* TODO: add button/span that displays when play with ai is clicked that lets user select whether to go first or seond */}
                 </div>
 
                 {/* <div className='bg-white opacity-70'> */}

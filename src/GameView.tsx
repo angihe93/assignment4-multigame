@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import './App.css'
-import { type ChosenCol, type Game as GameState } from './game/game'
+import { type ChosenCol, type Game as GameState, type Player } from './game/game'
 import Confetti from 'react-confetti'
 import { Connect4ClientApi } from './api'
 import { useLoaderData, useNavigate } from 'react-router'
@@ -11,15 +11,19 @@ export default function GameView() {
     // client api will call the routes which will call the server api
     const api = useMemo(() => new Connect4ClientApi, [])
 
-    const { game: initialGame } = useLoaderData<{ game: GameState }>()
-    console.log("we just loaded data:", initialGame)
+    const { game: initialGame, aiPlayer: aiPlayer } = useLoaderData<{ game: GameState, aiPlayer: Player }>()
+    // const aiPlayer = useLoaderData<aiPlayer: Player>()
+    console.log("we just loaded data:", initialGame, aiPlayer)
     const navigate = useNavigate()
 
     const [gameState, setGameState] = useState<GameState | undefined>(initialGame)
+    // const [aiPlayerState, setAiPlayerState] = useState<Player | undefined>()
 
     async function initializeGame() {
-        const initialGameState = await api.createGame()
+        // show modal, ask if user wants to play with ai or not, and if ai if they want to play first or second
+        const initialGameState = await api.createGame(aiPlayer)
         setGameState(initialGameState)
+        // setAiPlayerState(aiPlayer)
         const id = initialGameState.id
         navigate(`/game/${id}`)
     }
@@ -67,7 +71,7 @@ export default function GameView() {
         // after user hits reset, create new game, and direct to the new game url
         // so when user refreshes page it is the new game that shows not the previous one
         setConfettiOn(false)
-        const newGameState = await api.createGame()
+        const newGameState = await api.createGame(aiPlayer)
         const id = newGameState.id
         setGameState(newGameState)
         navigate(`/game/${id}`)

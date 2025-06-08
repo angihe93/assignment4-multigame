@@ -1,10 +1,11 @@
-import { type Game as GameState, initialGameState as createGame, move as makeMove, type ChosenCol } from './game/game.js';
+import { type Game as GameState, initialGameState as createGame, move as makeMove, type ChosenCol, type Player } from './game/game.js';
 
 export interface Connect4Api {
-    createGame(): Promise<GameState>
+    createGame(aiPlayer?: Player): Promise<GameState>
     makeMove(gameId: string, chosenCol: ChosenCol): Promise<GameState>
     getGame(gameId: string): Promise<GameState>
     getGames(): Promise<{ open: GameState[], closed: GameState[] }>
+    getOptimalMove?(gridStr: string): Promise<ChosenCol | null>
 }
 
 // server implementation, using an in-memory data structure to store and manage games
@@ -44,11 +45,12 @@ const BASE_URL = "http://localhost:3000"
 
 // client implementation, using fetch to communicate with the sever
 export class Connect4ClientApi implements Connect4Api {
-    async createGame(): Promise<GameState> {
+    async createGame(aiPlayer?: Player): Promise<GameState> {
         // const response = await fetch(`${BASE_URL}/api/game`, {
         const response = await fetch(`/api/game`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ aiPlayer })
         })
         const game = await response.json()
         return game

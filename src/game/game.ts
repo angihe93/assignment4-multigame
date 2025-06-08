@@ -11,6 +11,7 @@ export type Game = {
     id: string,
     grid: Grid,
     currentPlayer: Player,
+    aiPlayer?: Player,
     endState?: EndState,
 }
 
